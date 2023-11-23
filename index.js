@@ -9,7 +9,6 @@ app.use(express.json());
 
 //port
 const port = process.env.PORT || 3000;
-
 const uri = "mongodb+srv://Ibrahim:12345514@ibrahim.a2p60n2.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -23,17 +22,19 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        const todoCollection = client.db("TodoDb").collection("Todo")
-        const pogressColluction = client.db("TodoDb").collection("pogress")
-        const completeColluction = client.db("TodoDb").collection("Complete")
+
+        const todoCollection = client.db("TodoDb").collection("Todo");
+        const pogressColluction = client.db("TodoDb").collection("pogress");
+        // const completeColluction = client.db("TodoDb").collection("Complete");
 
         //get all data
         app.get('/', async (req, res) => {
             const tasks = await todoCollection.find().toArray();
             res.send(tasks);
-        });
+        })
 
         //post data
+
 
         app.post('/', async (req, res) => {
             const data = req.body;
@@ -47,11 +48,13 @@ async function run() {
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
-        await client.close();
+        // await client.close();
     }
 }
 run().catch(console.dir);
 
+
+
 app.listen(port, () => {
-    console.log(`Todo task app lisitning ${port}`)
+    console.log(`Todo task app listening ${port}`)
 })
