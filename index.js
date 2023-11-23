@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
-
+const { ObjectId } = require('mongodb');
 //midalware
 app.use(cors());
 app.use(express.json());
@@ -23,8 +23,8 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
 
-        const todoCollection = client.db("TodoDb").collection("Todo");
-        const pogressColluction = client.db("TodoDb").collection("pogress");
+        const todoCollection = client.db("TasksDb").collection("Todo");
+        const pogressColluction = client.db("TasksDb").collection("pogress");
         // const completeColluction = client.db("TodoDb").collection("Complete");
 
         //get all data
@@ -36,11 +36,31 @@ async function run() {
         //post data
 
 
-        app.post('/', async (req, res) => {
+        app.post('/task', async (req, res) => {
             const data = req.body;
+
             const result = await todoCollection.insertOne(data);
             res.send(result);
         });
+        app.put('/move/:status', async (req, res) => {
+
+            const idsToUpdate = req.body.map(id => ObjectI(id));
+            const newStatus = req.params.status;
+
+            try {
+                const result = await todoCollection.updateMany(
+                    { _id: { $in: idsToUpdate } },
+                    { $set: { status: newStatus } }
+                );
+
+                res.status(200).send({ message: 'Status updated successfully.' });
+            } catch (error) {
+                res.status(500).send({ message: 'Error updating status.', error });
+
+
+            }
+        });
+
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         // Send a ping to confirm a successful connection
