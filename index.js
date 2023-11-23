@@ -23,11 +23,23 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        const todoColluction = client.db("TodoDb").collection("Todo")
+        const todoCollection = client.db("TodoDb").collection("Todo")
         const pogressColluction = client.db("TodoDb").collection("pogress")
         const completeColluction = client.db("TodoDb").collection("Complete")
 
+        //get all data
+        app.get('/', async (req, res) => {
+            const tasks = await todoCollection.find().toArray();
+            res.send(tasks);
+        });
 
+        //post data
+
+        app.post('/', async (req, res) => {
+            const data = req.body;
+            const result = await todoCollection.insertOne(data);
+            res.send(result);
+        });
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
         // Send a ping to confirm a successful connection
