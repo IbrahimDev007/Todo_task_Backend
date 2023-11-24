@@ -11,6 +11,7 @@ app.use(express.json());
 const port = process.env.PORT || 3000;
 const uri = "mongodb+srv://Ibrahim:12345514@ibrahim.a2p60n2.mongodb.net/?retryWrites=true&w=majority";
 
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
     serverApi: {
@@ -54,7 +55,25 @@ async function run() {
                 const result = await todoCollection.updateMany(filter, Update)
                 console.log(`${result.modifiedCount} successfully updated`);
 
-                res.status(200).send({ message: 'Status updated successfully.', resulteee: result });
+                res.status(200).send({ message: 'Status updated successfully.', resulte: result });
+            } catch (error) {
+                res.status(500).send({ message: 'Error updating status.', error });
+
+
+            }
+        });
+        app.delete('/delete', async (req, res) => {
+            const data = req.body.selectedData.map(id => new ObjectId(id));
+            const filter = {
+                _id: {
+                    $in: data
+                }
+            }
+
+            try {
+                const result = await todoCollection.deleteMany(filter)
+                console.log(`${result.modifiedCount} successfully updated`);
+                res.status(200).send({ message: 'Status updated successfully.', resulte: result });
             } catch (error) {
                 res.status(500).send({ message: 'Error updating status.', error });
 
