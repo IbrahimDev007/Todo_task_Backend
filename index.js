@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
-const { ObjectId } = require('mongodb');
+
 //midalware
 app.use(cors());
 app.use(express.json());
@@ -42,18 +42,23 @@ async function run() {
             const result = await todoCollection.insertOne(data);
             res.send(result);
         });
-        app.put('/move/:status', async (req, res) => {
+        app.patch('/move/:status', async (req, res) => {
 
-            const idsToUpdate = req.body.map(id => ObjectI(id));
+            const data = req.body.selectedData.map(id => new ObjectId(id));
+
             const newStatus = req.params.status;
+            const filter = {
+                _id: {
+                    $in: data
+                }
+            }
+            const Update = { $set: { status: newStatus } };
 
             try {
-                const result = await todoCollection.updateMany(
-                    { _id: { $in: idsToUpdate } },
-                    { $set: { status: newStatus } }
-                );
+                const result = await todoCollection.updateMany(filter, Update)
+                console.log(`${result.modifiedCount} successfully updated`);
 
-                res.status(200).send({ message: 'Status updated successfully.' });
+                res.status(200).send({ message: 'Status updated successfully.', resulteee: result });
             } catch (error) {
                 res.status(500).send({ message: 'Error updating status.', error });
 
