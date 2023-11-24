@@ -71,8 +71,8 @@ async function run() {
             }
 
             try {
-                const result = await todoCollection.deleteMany(filter)
-                console.log(`${result.modifiedCount} successfully updated`);
+                const result = await todoCollection.findOneAndDelete(filter)
+                console.log(`${result.modifiedCount} successfully deleted`);
                 res.status(200).send({ message: 'Status updated successfully.', resulte: result });
             } catch (error) {
                 res.status(500).send({ message: 'Error updating status.', error });
