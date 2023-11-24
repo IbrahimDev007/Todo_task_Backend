@@ -34,8 +34,6 @@ async function run() {
         })
 
         //post data
-
-
         app.post('/task', async (req, res) => {
             const data = req.body;
 
@@ -43,9 +41,7 @@ async function run() {
             res.send(result);
         });
         app.patch('/move/:status', async (req, res) => {
-
             const data = req.body.selectedData.map(id => new ObjectId(id));
-
             const newStatus = req.params.status;
             const filter = {
                 _id: {
@@ -77,8 +73,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-
 
 app.listen(port, () => {
     console.log(`Todo task app listening ${port}`)
