@@ -63,7 +63,15 @@ async function run() {
             }
         });
         app.delete('/delete', async (req, res) => {
-            const data = req.body.selectedData.map(id => new ObjectId(id));
+            const data = req.body.selectedData.map(id => {
+                try {
+                    return new ObjectId(id);
+                } catch (error) {
+                    console.error(`Invalid ObjectId: ${id}`);
+                    return null;
+                }
+            }).filter(id => id !== null);
+
             const filter = {
                 _id: {
                     $in: data
@@ -71,15 +79,14 @@ async function run() {
             }
 
             try {
-                const result = await todoCollection.findOneAndDelete(filter)
-                console.log(`${result.modifiedCount} successfully deleted`);
-                res.status(200).send({ message: 'Status updated successfully.', resulte: result });
+                const result = await todoCollection.deleteMany(filter)
+                console.log(`${result.deletedCount} successfully deleted`);
+                res.status(200).send({ message: 'Status updated successfully.', result: result });
             } catch (error) {
                 res.status(500).send({ message: 'Error updating status.', error });
-
-
             }
         });
+
 
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
